@@ -7,6 +7,16 @@ let app = express();
 let bot = new CloudStorm(config.token, config.botConfig);
 let shardRouter = require('./routes/shardStatusRoutes');
 let gatewayRouter = require('./routes/gatewayRoutes');
+let StatsD;
+let statsClient;
+try {
+    StatsD = require('hot-shots');
+} catch (e) {
+
+}
+if (StatsD && config.statsD && config.statsD.enabled) {
+    statsClient = new StatsD(config.statsD);
+}
 const version = require('./package.json').version;
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -20,7 +30,7 @@ app.all('/', (req, res) => {
     res.json({version: version, gatewayVersion: bot.version});
 });
 app.listen(config.port, config.host);
-let connection = amqp.createConnection({host: 'localhost'});
+let connection = amqp.createConnection(config.amqpUrl);
 connection.on('error', (e) => {
     console.error(e);
 });
@@ -28,22 +38,27 @@ connection.on('ready', async () => {
     console.log('AMQP Connection ready');
     await bot.connect();
     bot.on('event', (event) => {
-        connection.publish('test-pre-cache', event);
+        if (statsClient) {
+            statsClient.increment(`discordevent`, 1, 1, [`shard:${event.shard_id}`, `event:${event.t}`], (err) => {
+                if (err) {
+                    console.log(err);
+                }
+            });
+            if (event.t !== 'PRESENCE_UPDATE') {
+                statsClient.increment(`discordevent.np`, 1, 1, [`shard:${event.shard_id}`, `event:${event.t}`], (err) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+            }
+        }
+        connection.publish(config.amqpQueue, event);
         // Event was sent to amqp queue, now you can use it somewhere else
     });
 });
 bot.on('ready', () => {
     console.log(`Bot is ready with ${Object.keys(bot.shardManager.shards).length} shards`);
 });
-// bot.on('debug', (debug) => {
-//     console.log(debug);
-// });
-// bot.on('rawReceive', (event) => {
-//     console.log(event);
-// });
-// bot.on('rawSend', (send) => {
-//     console.log(send);
-// });
 // bot.on('event', (event) => {
 //     console.log(event);
 // });

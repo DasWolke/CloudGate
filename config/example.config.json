@@ -2,6 +2,8 @@
   "token": "TOKEN",
   "host": "127.0.0.1",
   "port": 7000,
+  "amqpUrl": "",
+  "amqpQueue": "test-pre-cache",
   "botConfig": {
     "firstShardId": 0,
     "lastShardId": 0,
@@ -12,5 +14,11 @@
         "name": "Some bot"
       }
     }
+  },
+  "statsD": {
+    "enabled": false,
+    "host": "host",
+    "port": 8125,
+    "prefix": "CloudGate"
   }
 }
