@@ -14,8 +14,8 @@
   "dependencies": {
     "amqp": "^0.2.7",
     "body-parser": "^1.18.3",
-    "cloudstorm": "DasWolke/CloudStorm",
-    "Cloudstorm": "DasWolke/CloudStorm",
+    "cloudstorm": "github:daswolke/cloudstorm",
+    "Cloudstorm": "github:daswolke/cloudstorm",
     "express": "^4.16.4",
     "redis": "^2.8.0",
     "tsubaki": "^1.3.1"
