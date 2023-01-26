@@ -2,17 +2,23 @@
   "token": "TOKEN",
   "host": "127.0.0.1",
   "port": 7000,
-  "amqpUrl": "",
+  "amqpUrl": "amqp://localhost",
   "amqpQueue": "test-pre-cache",
+  "authorization": "",
   "botConfig": {
     "firstShardId": 0,
     "lastShardId": 0,
     "shardAmount": 1,
     "initialPresence": {
       "status": "online",
-      "game": {
-        "name": "Some bot"
-      }
+      "activities": [
+        {
+          "name": "Some bot",
+          "type": 0
+        }
+      ],
+      "since": null,
+      "afk": null
     }
   },
   "statsD": {
