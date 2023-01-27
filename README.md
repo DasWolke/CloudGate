@@ -17,6 +17,7 @@ The botConfig is directly passed to the CloudStorm instance, so you can apply ot
   "port": 7000,
   "amqpUrl": "amqp://guest:guest@localhost:56782",
   "amqpQueue": "test-pre-cache",
+	"identifier": "",
   "authorization": "",
   "botConfig": {
     "firstShardId": 0,
@@ -48,6 +49,17 @@ The botConfig is directly passed to the CloudStorm instance, so you can apply ot
 To run the server, simple type `node index.js`
 
 ## Documentation
+Messages sent to amqp will look like this:
+```js
+{
+	op: 0, // CloudGate only sends op 0 Dispatch events
+	d?: any,
+	s?: number,
+	t?: string,
+	shard_id: number,
+	cluster_id?: string // If CloudGate is configured with an identifier, this property will be present so you can easily route actions even with tons of gates
+}
+```
 
 ### ANY /
 

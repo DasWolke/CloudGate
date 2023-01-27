@@ -47,6 +47,8 @@ server.listen(config.port, config.host)
 
 bot.once('ready', () => console.log(`Bot is ready with ${Object.keys(bot.shardManager.shards).length} shards`))
 
+const cb = (err) => err ? console.error(err) : undefined
+
 ;(async () => {
   const connection = await amqp.connect(config.amqpUrl)
   connection.on('error', console.error)
@@ -57,18 +59,14 @@ bot.once('ready', () => console.log(`Bot is ready with ${Object.keys(bot.shardMa
 
   bot.on('event', event => {
     if (event.op !== 0) return
+    /** @type {typeof event & { cluster_id?: string }} */
+    const withID = event
     if (statsClient) {
-      statsClient.increment('discordevent', 1, 1, [`shard:${event.shard_id}`, `event:${event.t}`], err => {
-        if (err) console.log(err)
-      })
-
-      if (event.t !== 'PRESENCE_UPDATE') {
-        statsClient.increment('discordevent.np', 1, 1, [`shard:${event.shard_id}`, `event:${event.t}`], err => {
-          if (err) console.log(err)
-        })
-      }
+      statsClient.increment('discordevent', 1, 1, [`shard:${event.shard_id}`, `event:${event.t}`], cb)
+      if (event.t !== 'PRESENCE_UPDATE') statsClient.increment('discordevent.np', 1, 1, [`shard:${event.shard_id}`, `event:${event.t}`], cb)
     }
-    channel.sendToQueue(config.amqpQueue, Buffer.from(JSON.stringify(event)), { contentType: 'application/json' })
+    if (config.identifier?.length) withID.cluster_id = config.identifier
+    channel.sendToQueue(config.amqpQueue, Buffer.from(JSON.stringify(withID)), { contentType: 'application/json' })
     // Event was sent to amqp queue, now you can use it somewhere else
   })
 })()

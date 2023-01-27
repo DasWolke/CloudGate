@@ -4,6 +4,7 @@
   "port": 7000,
   "amqpUrl": "amqp://guest:guest@localhost:56782",
   "amqpQueue": "test-pre-cache",
+  "identifier": "",
   "authorization": "",
   "botConfig": {
     "firstShardId": 0,
