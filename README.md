@@ -49,7 +49,7 @@ To run the server, simple type `node index.js`
 
 ## Documentation
 
-ANY /
+### ANY /
 
 Returns information about the gate including the Discord gateway version
 
@@ -64,7 +64,7 @@ application/json
 
 
 
-POST /gateway/status-update
+### POST /gateway/status-update
 
 Updates either a shard's status or the entire cluster status
 
@@ -97,7 +97,7 @@ application/json
 
 
 
-POST /gateway/voice-status-update
+### POST /gateway/voice-status-update
 
 Updates the voice state of a shard in the cluster
 
@@ -123,7 +123,7 @@ application/json
 
 
 
-POST /gateway/request-guild-members
+### POST /gateway/request-guild-members
 
 Requests guild members from a guild the cluster watches over through the gateway
 
@@ -153,7 +153,7 @@ application/json
 
 
 
-GET /shards/status
+### GET /shards/status
 
 Returns information about all of the shards in the cluster's status as well as the endpoint the shards are connected to
 
@@ -166,7 +166,7 @@ application/json
 			"id": 0,
 			"status": "ready",
 			"ready": true,
-			"trace": [an array of long debug strings],
+			"trace": ["an array of long debug strings"],
 			"seq": 1
 		}
 	},
@@ -176,7 +176,7 @@ application/json
 
 
 
-GET /shards/queue
+### GET /shards/queue
 Returns information about which shards aren't ready and are pending connection
 It is possible for this list to include shards which have been asked by Discord to resume or have already connected before but are no longer ready
 
@@ -186,7 +186,7 @@ application/json
 {
 	"queue": [
 		{
-			id: 0
+			"id": 0
 		}
 	]
 }
@@ -194,7 +194,7 @@ application/json
 
 
 
-GET /shards/:id
+### GET /shards/:id
 Returns information about a specific shard in the cluster
 
 
@@ -204,7 +204,7 @@ application/json
 	"id": 0,
 	"status": "ready",
 	"ready": true,
-	"trace": [an array of long debug strings],
+	"trace": ["an array of long debug strings"],
 	"seq": 1
 }
 ```
