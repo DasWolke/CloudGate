@@ -31,10 +31,7 @@ const server = http.createServer(async (req, res) => {
       else if (!path.methods.includes(req.method?.toUpperCase() || '')) res.writeHead(405).end()
       else if (req.headers.range) res.writeHead(416).end()
       else if (req.headers.expect) res.writeHead(417).end()
-      else {
-        if (path.handle) await path.handle(req, res, url)
-        else res.writeHead(500).end()
-      }
+      else await path.handle(req, res, url)
     }
   } catch (e) {
     console.error(e)

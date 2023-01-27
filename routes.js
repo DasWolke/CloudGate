@@ -5,6 +5,7 @@ const { bot } = require('./passthrough')
 const meta = `{"version":"${version}","gatewayVersion":"${require('cloudstorm/package.json').version}"}`
 const updatedStatusMessage = '{"message":"Updated status"}'
 const payloadSentMessage = '{"message":"successfully sent payload"}'
+const missingStatus = '{"message":"missing status"}'
 const missingShardIDMessage = '{"message":"missing shard_id"}'
 const missingGuildIDMessage = '{"message":"missing guild_id"}'
 
@@ -28,7 +29,7 @@ const paths = {
       /** @type {import("discord-typings").GatewayPresenceUpdate & { shard_id?: number }} */
       const status = JSON.parse(body.toString('utf-8'))
 
-      if (!status.status) return res.writeHead(400, jsonHeaders).end('{"message":"missing status"}')
+      if (!status.status) return res.writeHead(400, jsonHeaders).end(missingStatus)
       if (typeof status.shard_id === 'number') await bot.shardStatusUpdate(status.shard_id, status)
       else await bot.shardManager.presenceUpdate(status)
       res.writeHead(200, jsonHeaders).end(updatedStatusMessage)
