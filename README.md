@@ -4,6 +4,7 @@
 CloudGate is a Discord shard cluster microservice built on top of [CloudStorm](https://github.com/DasWolke/CloudStorm) with a REST api to perform gateway actions. CloudGate has a low resource footprint and publishes incoming messages through amqp like RabbitMQ. CloudGate has support for StatsD, DogStatsD, and Telegraf.
 
 To get started with CloudGate, you want to `git clone` this repository first
+
 Now run `npm install` or `yarn` in the cloned directory to install the necessary dependencies
 
 ## Configuration
@@ -49,7 +50,9 @@ To run the server, simple type `node index.js`
 ## Documentation
 
 ANY /
+
 Returns information about the gate including the Discord gateway version
+
 
 application/json
 ```json
@@ -59,8 +62,12 @@ application/json
 }
 ```
 
+
+
 POST /gateway/status-update
+
 Updates either a shard's status or the entire cluster status
+
 
 post json data:
 ```js
@@ -80,6 +87,7 @@ post json data:
 }
 ```
 
+
 application/json
 ```json
 {
@@ -87,8 +95,12 @@ application/json
 }
 ```
 
+
+
 POST /gateway/voice-status-update
+
 Updates the voice state of a shard in the cluster
+
 
 post json data
 ```js
@@ -101,6 +113,7 @@ post json data
 }
 ```
 
+
 application/json
 ```json
 {
@@ -108,9 +121,14 @@ application/json
 }
 ```
 
+
+
 POST /gateway/request-guild-members
+
 Requests guild members from a guild the cluster watches over through the gateway
+
 This route does not return the requested members and instead sends it through a op 0 Dispatch GUILD_MEMBERS_CHUNK payload over the regular gateway amqp channel
+
 
 post json data
 ```js
@@ -125,6 +143,7 @@ post json data
 }
 ```
 
+
 application/json
 ```json
 {
@@ -132,8 +151,12 @@ application/json
 }
 ```
 
+
+
 GET /shards/status
+
 Returns information about all of the shards in the cluster's status as well as the endpoint the shards are connected to
+
 
 application/json
 ```json
@@ -151,9 +174,12 @@ application/json
 }
 ```
 
+
+
 GET /shards/queue
 Returns information about which shards aren't ready and are pending connection
 It is possible for this list to include shards which have been asked by Discord to resume or have already connected before but are no longer ready
+
 
 application/json
 ```json
@@ -166,8 +192,11 @@ application/json
 }
 ```
 
+
+
 GET /shards/:id
 Returns information about a specific shard in the cluster
+
 
 application/json
 ```json
