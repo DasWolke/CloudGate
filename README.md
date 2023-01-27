@@ -19,6 +19,7 @@ The botConfig is directly passed to the CloudStorm instance, so you can apply ot
   "amqpQueue": "test-pre-cache",
 	"identifier": "",
   "authorization": "",
+	"debug": false,
   "botConfig": {
     "firstShardId": 0,
     "lastShardId": 0,
@@ -69,7 +70,7 @@ Returns information about the gate including the Discord gateway version
 application/json
 ```json
 {
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"gatewayVersion": 10
 }
 ```

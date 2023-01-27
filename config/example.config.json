@@ -6,6 +6,7 @@
   "amqpQueue": "test-pre-cache",
   "identifier": "",
   "authorization": "",
+  "debug": false,
   "botConfig": {
     "firstShardId": 0,
     "lastShardId": 0,
