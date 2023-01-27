@@ -1,8 +1,8 @@
 {
-  "token": "TOKEN",
+  "token": "DISCORD BOT TOKEN",
   "host": "127.0.0.1",
   "port": 7000,
-  "amqpUrl": "amqp://localhost",
+  "amqpUrl": "amqp://guest:guest@localhost:56782",
   "amqpQueue": "test-pre-cache",
   "authorization": "",
   "botConfig": {

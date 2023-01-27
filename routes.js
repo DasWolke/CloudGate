@@ -2,7 +2,7 @@ const version = require('./package.json').version
 
 const { bot } = require('./passthrough')
 
-const meta = `{"version":"${version}","gatewayVersion":"${require('cloudstorm/package.json').version}"}`
+const meta = `{"version":"${version}","gatewayVersion":${require('cloudstorm').Constants.GATEWAY_VERSION}}`
 const updatedStatusMessage = '{"message":"Updated status"}'
 const payloadSentMessage = '{"message":"successfully sent payload"}'
 const missingStatus = '{"message":"missing status"}'
@@ -30,8 +30,11 @@ const paths = {
       const status = JSON.parse(body.toString('utf-8'))
 
       if (!status.status) return res.writeHead(400, jsonHeaders).end(missingStatus)
-      if (typeof status.shard_id === 'number') await bot.shardStatusUpdate(status.shard_id, status)
-      else await bot.shardManager.presenceUpdate(status)
+      if (typeof status.shard_id === 'number') {
+        const shard = Object.values(bot.shardManager.shards).find(s => s.id === Number(status.shard_id))
+        if (!shard) return res.writeHead(404, jsonHeaders).end(JSON.stringify({ message: `Shard ${status.shard_id} does not exist` }))
+        await bot.shardStatusUpdate(status.shard_id, status)
+      } else await bot.shardManager.presenceUpdate(status)
       res.writeHead(200, jsonHeaders).end(updatedStatusMessage)
     }
   },
@@ -43,8 +46,10 @@ const paths = {
       /** @type {import("discord-typings").VoiceStateUpdatePayload & { shard_id?: number }} */
       const state = JSON.parse(body.toString('utf-8'))
 
-      if (!state.shard_id && state.shard_id !== 0) return res.writeHead(400, jsonHeaders).end(missingShardIDMessage)
+      if (typeof state.shard_id !== 'number') return res.writeHead(400, jsonHeaders).end(missingShardIDMessage)
       if (!state.guild_id) return res.writeHead(400, jsonHeaders).end(missingGuildIDMessage)
+      const shard = Object.values(bot.shardManager.shards).find(s => s.id === Number(state.shard_id))
+      if (!shard) return res.writeHead(404, jsonHeaders).end(JSON.stringify({ message: `Shard ${state.shard_id} does not exist` }))
 
       await bot.voiceStateUpdate(state.shard_id, state)
       res.writeHead(200, jsonHeaders).end(payloadSentMessage)
@@ -58,14 +63,17 @@ const paths = {
       /** @type {import("discord-typings").GuildRequestMembersPayload & { shard_id?: number }} */
       const payload = JSON.parse(body.toString('utf-8'))
 
-      if (!payload.shard_id && payload.shard_id !== 0) return res.writeHead(400, jsonHeaders).end(missingShardIDMessage)
+      if (typeof payload.shard_id !== 'number') return res.writeHead(400, jsonHeaders).end(missingShardIDMessage)
       if (!payload.guild_id) return res.writeHead(400, jsonHeaders).end(missingGuildIDMessage)
+      const shard = Object.values(bot.shardManager.shards).find(s => s.id === Number(payload.shard_id))
+      if (!shard) return res.writeHead(404, jsonHeaders).end(JSON.stringify({ message: `Shard ${payload.shard_id} does not exist` }))
+
       await bot.requestGuildMembers(payload.shard_id, payload)
       res.writeHead(200, jsonHeaders).end(payloadSentMessage)
     }
   },
   '/shards/status': {
-    methods: ['GET'],
+    methods: ['GET', 'HEAD'],
     async handle (req, res) {
       const slist = bot.shardManager.shards
       const shards = Object.keys(slist)
@@ -85,7 +93,7 @@ const paths = {
     }
   },
   '/shards/queue': {
-    methods: ['GET'],
+    methods: ['GET', 'HEAD'],
     async handle (req, res) {
       const notReady = Object.values(bot.shardManager.shards).filter(s => !s.ready).map(s => ({ id: s.id }))
       return res.writeHead(200, jsonHeaders).end(JSON.stringify({ queue: notReady }))
@@ -101,7 +109,7 @@ const routes = {
     methods: ['GET'],
     async router (req, res, url, params) {
       const shard = Object.values(bot.shardManager.shards).find(s => s.id === Number(params.id))
-      if (!shard) return res.writeHead(404, jsonHeaders).end(JSON.stringify({ status: 404, message: `Shard ${params.id} does not exist` }))
+      if (!shard) return res.writeHead(404, jsonHeaders).end(JSON.stringify({ message: `Shard ${params.id} does not exist` }))
       const shardData = {
         id: shard.id,
         status: shard.connector.status,

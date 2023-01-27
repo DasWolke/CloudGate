@@ -23,7 +23,7 @@ const paths = require('./routes')
 
 const server = http.createServer(async (req, res) => {
   try {
-    if (config.authorization?.length && req.headers.authorization !== config.authorization) return res.writeHead(401).end()
+    if (config.authorization?.length && req.headers.authorization !== config.authorization) return res.writeHead(401, { 'Content-Type': 'application/json' }).end(JSON.stringify({ message: 'unauthorized' }))
     const url = new URL(req.url || '', `http://${req.headers.host}`)
     const path = paths[url.pathname]
     if (path) {
@@ -32,7 +32,7 @@ const server = http.createServer(async (req, res) => {
       else if (req.headers.range) res.writeHead(416).end()
       else if (req.headers.expect) res.writeHead(417).end()
       else await path.handle(req, res, url)
-    }
+    } else res.writeHead(404, { 'Content-Type': 'application/json' }).end(JSON.stringify({ message: 'not found' }))
   } catch (e) {
     console.error(e)
     if (res.writable) res.writeHead(500, { 'Content-Type': 'application/json' }).end(JSON.stringify({ message: 'internal server error', error: String(e) }))
@@ -56,6 +56,7 @@ bot.once('ready', () => console.log(`Bot is ready with ${Object.keys(bot.shardMa
   await bot.connect()
 
   bot.on('event', event => {
+    if (event.op !== 0) return
     if (statsClient) {
       statsClient.increment('discordevent', 1, 1, [`shard:${event.shard_id}`, `event:${event.t}`], err => {
         if (err) console.log(err)
