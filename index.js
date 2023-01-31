@@ -69,5 +69,8 @@ const cb = (err) => err ? console.error(err) : undefined
     channel.sendToQueue(config.amqpQueue, Buffer.from(JSON.stringify(withID)), { contentType: 'application/json' })
     // Event was sent to amqp queue, now you can use it somewhere else
   })
-  if (config.debug) bot.on('debug', console.log)
+  if (config.debug) {
+    bot.on('debug', console.log)
+    bot.on('error', console.log)
+  }
 })()
