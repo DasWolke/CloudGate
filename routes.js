@@ -26,7 +26,7 @@ const paths = {
     async handle (req, res) {
       if (!req.headers['content-length']) return res.writeHead(411).end()
       const body = await requestBody(req)
-      /** @type {import("discord-typings").GatewayPresenceUpdate & { shard_id?: number }} */
+      /** @type {import("discord-api-types/v10").GatewayPresenceUpdateData & { shard_id?: number }} */
       const status = JSON.parse(body.toString('utf-8'))
 
       if (!status.status) return res.writeHead(400, jsonHeaders).end(missingStatus)
@@ -43,7 +43,7 @@ const paths = {
     async handle (req, res) {
       if (!req.headers['content-length']) return res.writeHead(411).end()
       const body = await requestBody(req)
-      /** @type {import("discord-typings").VoiceStateUpdatePayload & { shard_id?: number }} */
+      /** @type {import("discord-api-types/v10").GatewayVoiceStateUpdateData & { shard_id?: number }} */
       const state = JSON.parse(body.toString('utf-8'))
 
       if (typeof state.shard_id !== 'number') return res.writeHead(400, jsonHeaders).end(missingShardIDMessage)
@@ -60,7 +60,7 @@ const paths = {
     async handle (req, res) {
       if (!req.headers['content-length']) return res.writeHead(411).end()
       const body = await requestBody(req)
-      /** @type {import("discord-typings").GuildRequestMembersPayload & { shard_id?: number }} */
+      /** @type {import("discord-api-types/v10").GatewayRequestGuildMembersData & { shard_id?: number }} */
       const payload = JSON.parse(body.toString('utf-8'))
 
       if (typeof payload.shard_id !== 'number') return res.writeHead(400, jsonHeaders).end(missingShardIDMessage)
